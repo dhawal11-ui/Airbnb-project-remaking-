@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require("mongoose");
 const Listing = require("./models/listing.js");
 const path = require("path");
+const methodOverride = require("method-override");
 
 const MONGO_URl = "mongodb://127.0.0.1:27017/wanderlust";
 async function main() {
@@ -23,6 +24,7 @@ main()
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
 
 app.get("/", (req, res) => {
   res.send("hi Root");
@@ -45,6 +47,36 @@ app.get("/", (req, res) => {
 app.get("/listings", async (req, res) => {
   const allListings = await Listing.find({});
   res.render("listings/index.ejs", { allListings });
+});
+
+//New Route -> upr isliye likha taki new ko id na samaj le js
+app.get("/listings/new", (req, res) => {
+  res.render("listings/new.ejs"); // Corrected path
+});
+
+//Create route
+app.post("/listings", async (req, res) => {
+  // let {title,descripton,image,price,country,location} = req.body;
+  let retriveListing = req.body.listing;
+  const parseListing = new Listing(retriveListing); // ek instance banadiya
+  await parseListing.save();
+  console.log(parseListing);
+  res.redirect("/listings");
+});
+
+//Edit route
+app.get("/listings/:id/edit", async (req, res) => {
+  let { id } = req.params;
+  const findListing = await Listing.findById(id);
+  res.render("listings/edit.ejs", { listing: findListing }); // find listing ki value ko change kiya for easy way .
+  // note -> findListing:listing X
+});
+
+// Update Route
+app.put("/listings/:id", async (req, res) => {
+  let { id } = req.params;
+  await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+  res.redirect(`/listings/${id}`);
 });
 
 //Show route
