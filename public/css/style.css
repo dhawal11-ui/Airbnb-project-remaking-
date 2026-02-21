@@ -1,0 +1,59 @@
+body {
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+}
+
+.navbar {
+  height: 5rem;
+  background-color: white;
+}
+
+.compassIcon {
+  color: #fe424f;
+  font-size: 2rem;
+}
+
+.nav-link {
+  color: #222222 !important; /*to over power bootsrap styling */
+}
+
+/* card styling */
+.card {
+  border: none !important;
+  margin-bottom: 2rem;
+  border: 2rem;
+}
+
+.card-img-top {
+  border-radius: 1rem !important;
+  width: 100% !important;
+  object-fit: cover !important;
+}
+
+.card-body {
+  padding: 0 !important;
+}
+.card-text {
+  padding-left: 1rem;
+  font-weight: 400 !important;
+}
+.listing-link {
+  text-decoration: none;
+}
+
+/* card Effect */
+.card-img-overlay {
+  opacity: 0;
+}
+/* .card-img-overlay:hover {
+  opacity: 0.2;
+  background-color: white;
+} */
+
+/* by google */
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(15px); /* Stronger blur on hover */
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* Add depth */
+  transform: translateY(-5px); /* Slight lift */
+}
