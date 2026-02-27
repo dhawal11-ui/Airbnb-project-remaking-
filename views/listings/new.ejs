@@ -14,6 +14,7 @@
             class="form-control"
             required
           />
+          <div class="valid-feedback">looks good!</div>
         </div>
         <div class="mb-3">
           <label for="description" class="form-label">Description</label>
@@ -33,23 +34,27 @@
             type="text"
             class="form-control"
           ></textarea>
+          <div class="invalid-feedback">please enter a short Description</div>
         </div>
         <div class="row">
           <div class="mb-3 col-md-4">
             <!-- medium ke baad 4:8 ka ratio hojaye md ke pehele individual line per rhe -->
             <label for="price" class="form-label">price</label>
             <input name="listing[price]" placeholder="1299" type="number" class="form-control" required />
+            <div class="invalid-feedback">Price should be Valid.</div>
           </div>
 
           <div class="mb-3 col-md-8">
             <label for="country" class="form-label">country</label>
             <!-- key value pairs here listing has key country and all -->
             <input name="listing[country]" placeholder="India" class="form-control" required />
+            <div class="invalid-feedback">Country name should be Valid.</div>
           </div>
         </div>
         <div class="mb-3">
           <label for="location" class="form-label">location</label>
           <input name="listing[location]" placeholder="Pune, MH" class="form-control" required />
+          <div class="invalid-feedback">Location name should be Valid.</div>
         </div>
         <br />
         <button class="btn btn-dark add-btn">Add</button>
@@ -57,4 +62,5 @@
       </form>
     </div>
   </div>
+  <script src="/js/script.js"></script>
 </body>
