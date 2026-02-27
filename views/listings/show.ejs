@@ -15,7 +15,7 @@
         <!-- ruppees me quomma wagera lagakar dega yeh function 
        its not local its locale-->
         <br />
-        &#8377; <%=listing.price.toLocaleString("en-In")%>
+        &#8377; <%= (listing.price != null) ? listing.price.toLocaleString("en-In") : 'N/A' %>
         <br />
         <%=listing.location%>
         <br />

@@ -4,7 +4,7 @@
     <div class="col-8 offset-2">
       <h3 class="">Create a New Listing</h3>
 
-      <form method="POST" action="/listings">
+      <form method="POST" action="/listings" class="needs-validation">
         <div class="mb-3">
           <label for="title" class="form-label">Title</label>
           <input
@@ -12,11 +12,18 @@
             placeholder="Enter Enter a catchy title"
             type="text"
             class="form-control"
+            required
           />
         </div>
         <div class="mb-3">
           <label for="description" class="form-label">Description</label>
-          <input name="listing[description]" placeholder="Enter title" type="text" class="form-control" />
+          <input
+            name="listing[description]"
+            placeholder="Enter title"
+            type="text"
+            class="form-control"
+            required
+          />
         </div>
         <div class="mb-3">
           <label for="image" class="form-label">Image</label>
@@ -31,18 +38,18 @@
           <div class="mb-3 col-md-4">
             <!-- medium ke baad 4:8 ka ratio hojaye md ke pehele individual line per rhe -->
             <label for="price" class="form-label">price</label>
-            <input name="listing[price]" placeholder="1299" type="number" class="form-control" />
+            <input name="listing[price]" placeholder="1299" type="number" class="form-control" required />
           </div>
 
           <div class="mb-3 col-md-8">
             <label for="country" class="form-label">country</label>
             <!-- key value pairs here listing has key country and all -->
-            <input name="listing[country]" placeholder="India" class="form-control" />
+            <input name="listing[country]" placeholder="India" class="form-control" required />
           </div>
         </div>
         <div class="mb-3">
           <label for="location" class="form-label">location</label>
-          <input name="listing[location]" placeholder="Pune, MH" class="form-control" />
+          <input name="listing[location]" placeholder="Pune, MH" class="form-control" required />
         </div>
         <br />
         <button class="btn btn-dark add-btn">Add</button>

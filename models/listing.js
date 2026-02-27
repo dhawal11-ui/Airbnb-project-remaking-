@@ -18,7 +18,12 @@ const listingSchema = new Schema({
       return v || defaultImg; // Use default if empty
     },
   },
-  price: Number,
+  price: {
+    type: Number,
+    required: true,
+    min: 0,
+    default: 0,
+  },
   location: String,
   country: String,
 });

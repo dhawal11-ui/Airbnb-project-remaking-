@@ -33,19 +33,6 @@ app.get("/", (req, res) => {
   res.send("hi Root");
 });
 
-// app.get("/testlisting", async (req, res) => {
-//   let sampleListing = new Listing({
-//     title: "My new Villa",
-//     description: "By the beach",
-//     price: 1200,
-//     location: "Calangute, Goa",
-//     country: "India",
-//   });
-//   await sampleListing.save();
-//   console.log("sample listing was saved");
-//   res.send("successful");
-// });
-
 //Index Route
 app.get("/listings", async (req, res) => {
   const allListings = await Listing.find({});
@@ -59,12 +46,18 @@ app.get("/listings/new", (req, res) => {
 
 //Create route
 app.post("/listings", async (req, res) => {
-  // let {title,descripton,image,price,country,location} = req.body;
-  let retriveListing = req.body.listing;
-  const parseListing = new Listing(retriveListing); // ek instance banadiya
-  await parseListing.save();
-  console.log(parseListing);
-  res.redirect("/listings");
+  try {
+    // let {title,descripton,image,price,country,location} = req.body;
+    let retriveListing = req.body.listing;
+    // ensure price is numeric (mongoose will also cast but validating early)
+
+    const parseListing = new Listing(retriveListing); // ek instance banadiya
+    await parseListing.save();
+    console.log(parseListing);
+    res.redirect("/listings");
+  } catch {
+    throw new Error(" title errors ");
+  }
 });
 
 //Edit route
@@ -94,6 +87,21 @@ app.get("/listings/:id", async (req, res) => {
   let { id } = req.params;
   const dataListing = await Listing.findById(id);
   res.render("listings/show.ejs", { listing: dataListing }); // data listing ka name changge kiya hai bas to make it easy to redable
+});
+
+// error-handler.js
+app.use((err, req, res, next) => {
+  console.error(err.stack); // Log the error stack for debugging
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Something broke!";
+
+  // Check if headers have already been sent to avoid errors
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  // Send the error response
+  res.status(statusCode).send(message);
 });
 
 app.listen(8080, () => {
