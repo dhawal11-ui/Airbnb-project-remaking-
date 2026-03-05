@@ -7,6 +7,8 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
+// the module exports a Joi schema directly, so require it without destructuring
+const listingSchema = require("./utils/schema.js");
 
 const MONGO_URl = "mongodb://127.0.0.1:27017/wanderlust";
 async function main() {
@@ -35,6 +37,21 @@ app.get("/", (req, res) => {
   res.send("hi Root");
 });
 
+const validateListing = (req, res, next) => {
+  // ensure body exists and contains a `listing` object
+  if (!req.body || typeof req.body !== "object" || !req.body.listing) {
+    throw new ExpressError(400, "Request body must include a listing object");
+  }
+  const { error } = listingSchema.validate(req.body, { abortEarly: false });
+  if (error) {
+    // consolidate details into one message
+    const errorMsg = error.details.map((el) => el.message).join(", ");
+    // sare error detaisl se msg nikalo (el) then join with ','
+    throw new ExpressError(400, errorMsg);
+  }
+  next();
+};
+
 //Index Route
 app.get(
   "/listings",
@@ -46,21 +63,23 @@ app.get(
 
 //New Route -> upr isliye likha taki new ko id na samaj le js
 app.get("/listings/new", (req, res) => {
-  res.render("listings/new.ejs"); // Corrected path
+  res.render("listings/new.ejs");
 });
 
 //Create route
 app.post(
   "/listings",
+  validateListing,
   wrapAsync(async (req, res, next) => {
-    if (!req.body.listing) {
-      throw new ExpressError(400, "bad req form client , send a valid data for creating a new post");
-    }
-    // let {title,descripton,image,price,country,location} = req.body;
+    // if (!req.body.listing) {
+    //   // bas lisiting ko dekh rhe hai . agr listing hai toh niche ka code run hoga but what about if a listing>field is missing? for that we implement listing validations with npm joi
+    //   throw new ExpressError(400, "bad req form client , send a valid data for creating a new post");
+    // }
+    // let result = listingSchema.validate(req.body);
+    // console.log(result);
     let retriveListing = req.body.listing;
-    // ensure price is numeric (mongoose will also cast but validating early)
-
     const parseListing = new Listing(retriveListing); // ek instance banadiya
+
     await parseListing.save();
     console.log(parseListing);
     res.redirect("/listings");
@@ -70,6 +89,7 @@ app.post(
 //Edit route
 app.get(
   "/listings/:id/edit",
+  validateListing,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     const findListing = await Listing.findById(id);
@@ -81,6 +101,7 @@ app.get(
 // Update Route
 app.put(
   "/listings/:id",
+  validateListing,
   wrapAsync(async (req, res) => {
     if (!req.body.listing) {
       throw new ExpressError(400, "bad req form client , send a valid data for update ");
@@ -111,27 +132,16 @@ app.get(
   }),
 );
 
-// all route likhne ka new tarika ."/*" yeh work nhi karta abhi
-// catch-all must start with a slash otherwise path-to-regexp throws
-// Catch-all route (must come after all other routes)
 app.all(/.*/, (req, res, next) => {
   next(new ExpressError(404, "Page not found"));
-  // throw new error se async req me express catch nhi kar pata.
 });
 
 // error-handler.js
 app.use((err, req, res, next) => {
-  // let statusCode = err.statusCode;
-  // let message = err.message;
-  let { statusCode = 501, message = "explicit message" } = err; // deconstructing from error
-  // res.status(statusCode).send(message);
-  // render the shared listings error template and pass error details
+  let { statusCode = 501, message = "explicit message" } = err;
+
   res.status(statusCode).render("listings/error.ejs", { err });
 });
-
-// app.use((req, res) => {
-//   res.send("I am a last freaking middleware");
-// });
 
 app.listen(8080, () => {
   console.log("server is on 8080");
