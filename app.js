@@ -124,7 +124,9 @@ app.use((err, req, res, next) => {
   // let statusCode = err.statusCode;
   // let message = err.message;
   let { statusCode = 501, message = "explicit message" } = err; // deconstructing from error
-  res.status(statusCode).send(message);
+  // res.status(statusCode).send(message);
+  // render the shared listings error template and pass error details
+  res.status(statusCode).render("listings/error.ejs", { err });
 });
 
 // app.use((req, res) => {
