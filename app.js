@@ -26,11 +26,11 @@ main()
   });
 
 // setup for ejs
+app.engine("ejs", ejsMate); // register ejs-mate before setting view engine
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
 app.get("/", (req, res) => {
@@ -71,12 +71,6 @@ app.post(
   "/listings",
   validateListing,
   wrapAsync(async (req, res, next) => {
-    // if (!req.body.listing) {
-    //   // bas lisiting ko dekh rhe hai . agr listing hai toh niche ka code run hoga but what about if a listing>field is missing? for that we implement listing validations with npm joi
-    //   throw new ExpressError(400, "bad req form client , send a valid data for creating a new post");
-    // }
-    // let result = listingSchema.validate(req.body);
-    // console.log(result);
     let retriveListing = req.body.listing;
     const parseListing = new Listing(retriveListing); // ek instance banadiya
 
@@ -139,7 +133,6 @@ app.all(/.*/, (req, res, next) => {
 // error-handler.js
 app.use((err, req, res, next) => {
   let { statusCode = 501, message = "explicit message" } = err;
-
   res.status(statusCode).render("listings/error.ejs", { err });
 });
 
