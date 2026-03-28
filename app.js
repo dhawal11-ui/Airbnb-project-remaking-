@@ -9,6 +9,7 @@ const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 // the module exports a Joi schema directly, so require it without destructuring
 const listingSchema = require("./utils/schema.js");
+const Review = require("./models/review.js");
 
 const MONGO_URl = "mongodb://127.0.0.1:27017/wanderlust";
 async function main() {
@@ -98,7 +99,10 @@ app.put(
   validateListing,
   wrapAsync(async (req, res) => {
     if (!req.body.listing) {
-      throw new ExpressError(400, "bad req form client , send a valid data for update ");
+      throw new ExpressError(
+        400,
+        "bad req form client , send a valid data for update ",
+      );
     }
     let { id } = req.params;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing });
@@ -123,6 +127,23 @@ app.get(
     let { id } = req.params;
     const dataListing = await Listing.findById(id);
     res.render("listings/show.ejs", { listing: dataListing }); // data listing ka name changge kiya hai bas to make it easy to redable
+  }),
+);
+
+//Reviews post route -->post ke ander reviews ki _id store kare hai
+app.post(
+  "/listings/:id/reviews",
+  wrapAsync(async (req, res) => {
+    let getListing = await Listing.findById(req.params.id);
+    let newReview = new Review(req.body.review);
+
+    getListing.reviews.push(newReview);
+
+    await newReview.save();
+    await getListing.save();
+
+    console.log("new review saved");
+    res.send("new review saved");
   }),
 );
 
