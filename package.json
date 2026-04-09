@@ -2,22 +2,22 @@
   "name": "airbnb-project-remaking-",
   "version": "1.0.0",
   "description": "remaking the airbnb project from start . With watching lectures",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "keywords": [],
+  "homepage": "https://github.com/dhawal11-ui/Airbnb-project-remaking-#readme",
+  "bugs": {
+    "url": "https://github.com/dhawal11-ui/Airbnb-project-remaking-/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dhawal11-ui/Airbnb-project-remaking-.git"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
+  "author": "",
   "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/dhawal11-ui/Airbnb-project-remaking-/issues"
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "homepage": "https://github.com/dhawal11-ui/Airbnb-project-remaking-#readme",
   "dependencies": {
     "bootstrap": "^5.3.8",
     "ejs": "^4.0.1",

@@ -48,7 +48,8 @@
       <form
         action="/listings/<%=listing.id %>/reviews"
         method="post"
-        class="mb-3"
+        class="mb-3 needs-validation"
+        novalidate
       >
         <div class="mb-3 mt-3">
           <label class="form-label" for="rating">Rating</label>
@@ -68,10 +69,30 @@
             id="comment"
             rows="5"
             class="form-control"
+            required
           ></textarea>
+          <!-- ==============To add what to add  in text area field if user dosent written anything ========================== -->
+          <div class="invalid-feedback">Add description</div>
         </div>
         <button class="btn btn-outline-dark">SUmbit</button>
       </form>
+      <hr />
+     <p><b> All</b></p>
+      
+<div class="row">
+      <% for(review of listing.reviews){ %>
+      <div class="card col-5 mb-3 ms-3 ">
+       <div class="card-body">
+       <h5 class="card-tile">Jae do</h5>
+       <p class="card-text"><%=review.comment%></p>
+       <p class="card-text"><%=review.rating%> stars</p>
+       </div>
+       <form action="/listings/<%=listing._id%>/reviews/<%=review._id%>?_method=DELETE" class="mb-3 mt-3" method="POST" >
+        <button class="btn btn-sm btn-dark">Dekete</button>
+       </form>
+      </div>
+        <%}%>
     </div>
   </div>
+</div>
 </body>
