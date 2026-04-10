@@ -11,7 +11,6 @@ const ExpressError = require("./utils/ExpressError.js");
 const listingSchema = require("./utils/schema.js");
 const { reviewSchema } = require("./utils/schema.js");
 const Review = require("./models/review.js");
-const review = require("./models/review.js");
 
 const MONGO_URl = "mongodb://127.0.0.1:27017/wanderlust";
 async function main() {
