@@ -1,16 +1,12 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-// the module exports listing schema as default and review schema as a property
-const listingSchema = require("./utils/schema.js");
-const { reviewSchema } = require("./utils/schema.js");
-const Review = require("./models/review.js");
+const listings = require("./routes/listing.js");
+const reviews = require("./routes/review.js");
 
 const MONGO_URl = "mongodb://127.0.0.1:27017/wanderlust";
 async function main() {
@@ -39,147 +35,8 @@ app.get("/", (req, res) => {
   res.send("hi Root");
 });
 
-const validateListing = (req, res, next) => {
-  // ensure body exists and contains a `listing` object
-  if (!req.body || typeof req.body !== "object" || !req.body.listing) {
-    throw new ExpressError(400, "Request body must include a listing object");
-  }
-  const { error } = listingSchema.validate(req.body, { abortEarly: false });
-  if (error) {
-    // consolidate details into one message
-    const errorMsg = error.details.map((el) => el.message).join(", ");
-    // sare error detaisl se msg nikalo (el) then join with ','
-    throw new ExpressError(400, errorMsg);
-  }
-  next();
-};
-
-//Review Validations
-const validateReview = (req, res, next) => {
-  // ensure body exists and contains a `review` object
-  if (!req.body || typeof req.body !== "object" || !req.body.review) {
-    throw new ExpressError(400, "Request body must include a review object");
-  }
-  const { error } = reviewSchema.validate(req.body, { abortEarly: false });
-  if (error) {
-    // consolidate details into one message
-    const errorMsg = error.details.map((el) => el.message).join(", ");
-    // sare error detaisl se msg nikalo (el) then join with ','
-    throw new ExpressError(400, errorMsg);
-  }
-  next();
-};
-
-//Index Route
-app.get(
-  "/listings",
-  wrapAsync(async (req, res) => {
-    const allListings = await Listing.find({});
-    res.render("listings/index.ejs", { allListings });
-  }),
-);
-
-//New Route -> upr isliye likha taki new ko id na samaj le js
-app.get("/listings/new", (req, res) => {
-  res.render("listings/new.ejs");
-});
-
-//Create route
-app.post(
-  "/listings",
-  validateListing,
-  wrapAsync(async (req, res, next) => {
-    let retriveListing = req.body.listing;
-    const parseListing = new Listing(retriveListing); // ek instance banadiya
-
-    await parseListing.save();
-    console.log(parseListing);
-    res.redirect("/listings");
-  }),
-);
-
-//Edit route
-app.get(
-  "/listings/:id/edit",
-  validateListing,
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    const findListing = await Listing.findById(id);
-    res.render("listings/edit.ejs", { listing: findListing }); // find listing ki value ko change kiya for easy way .
-    // note -> findListing:listing X
-  }),
-);
-
-// Update Route
-app.put(
-  "/listings/:id",
-  validateListing,
-  wrapAsync(async (req, res) => {
-    if (!req.body.listing) {
-      throw new ExpressError(
-        400,
-        "bad req form client , send a valid data for update ",
-      );
-    }
-    let { id } = req.params;
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-    res.redirect(`/listings/${id}`);
-  }),
-);
-
-app.delete(
-  "/listings/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let deletedListing = await Listing.findByIdAndDelete(id);
-    console.log(deletedListing);
-    res.redirect("/listings");
-  }),
-);
-
-//Show route
-app.get(
-  "/listings/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    const dataListing = await Listing.findById(id).populate("reviews");
-    res.render("listings/show.ejs", { listing: dataListing }); // data listing ka name changge kiya hai bas to make it easy to redable
-  }),
-);
-
-//Reviews post route -->post ke ander reviews ki _id store kare hai
-app.post(
-  "/listings/:id/reviews",
-  validateReview,
-  wrapAsync(async (req, res) => {
-    let { id } = req.body;
-    let getListing = await Listing.findById(req.params.id).populate("reviews");
-    let newReview = new Review(req.body.review);
-
-    getListing.reviews.push(newReview);
-
-    await newReview.save();
-    await getListing.save();
-
-    console.log("new review saved");
-
-    res.send("review saved");
-  }),
-);
-
-// //Review delete route
-app.delete(
-  "/listings/:id/reviews/:reviewId",
-  wrapAsync(async (req, res) => {
-    let { id, reviewId } = req.params;
-
-    // id se lisitngs mili uske andr reviews me gye waha se woh wala review dhunde using reviewId
-    await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } }); // ab yaha per pull operator hoga listing.review[] se review hatane ke liye.
-    await Review.findByIdAndDelete(reviewId);
-
-    res.redirect(`/listings/${id}`);
-  }),
-);
+app.use("/listings", listings);
+app.use("/listings/:id/reviews", reviews);
 
 app.all(/.*/, (req, res, next) => {
   next(new ExpressError(404, "Page not found"));
