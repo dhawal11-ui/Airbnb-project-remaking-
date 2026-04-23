@@ -1,6 +1,12 @@
 const express = require("express");
 const app = express();
 
+app.get("/getcookies", (req, res) => {
+  res.cookie("greet", "namaste"); // name value pairs . // name of the cookie - greet ; value of the cookie- hello/
+  res.cookie(`madeIn`, `India`);
+  res.send(`send some cookies !`);
+});
+
 const users = require("./routes/user.js");
 const posts = require("./routes/post.js");
 
